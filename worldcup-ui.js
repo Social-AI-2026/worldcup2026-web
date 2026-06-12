@@ -602,11 +602,12 @@
     /* ---- scoring ---- */
     var rk = arenaRanked(A);
     var ranked = rk.ranked, settledN = rk.settledN;
+    var TOTAL_MATCHES = 104;   // 全届世界杯总场次(分母);每场滚动预测+结算,settledN 由现在的 2 一路涨向 104
 
     lb.innerHTML =
       "<div class='wc-lb-head'><span class='wc-lb-ttl'>" + (en ? "Leaderboard" : "积分榜") + "</span>" +
         "<span class='wc-lb-note'>" + (settledN
-          ? (en ? settledN + " / " + FIX.length + " matches settled" : settledN + " / " + FIX.length + " 场已结算")
+          ? (en ? settledN + " / " + TOTAL_MATCHES + " matches settled" : settledN + " / " + TOTAL_MATCHES + " 场已结算")
           : (en ? "Locked · awaiting kickoff" : "已锁定 · 待开赛结算")) + "</span></div>" +
       "<div class='wc-lb-grid'>" + ranked.map(function (s, r) {
         var lead = r === 0 && s.pts > 0 ? " lead" : "";
