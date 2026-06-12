@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260530-thead3" />
-  <link rel="stylesheet" href="worldcup.css?v=20260612-202617" />
+  <link rel="stylesheet" href="worldcup.css?v=20260612-204339" />
 </head>
 <body class="layout-pill dark-theme" data-active-page="overview" data-lang="zh">
 
@@ -50,7 +50,7 @@
     <!-- ================================ HERO ============================== -->
     <section class="page-section hero" data-page="overview" id="hero">
       <div class="hero-video-bg" aria-hidden="true">
-        <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        <video class="hero-video" autoplay muted playsinline preload="auto">
           <source src="videos/hero.mp4?v=20260611wc" type="video/mp4" />
         </video>
         <div class="hero-video-overlay"></div>
@@ -67,6 +67,13 @@
           window.addEventListener('load', go, { once: true });
           ['pointerdown', 'touchstart', 'scroll', 'keydown'].forEach(function (ev) {
             window.addEventListener(ev, go, { once: true, passive: true });
+          });
+          // 播完不立即循环：去掉 loop 后视频自然停在最后一帧；停留 5 秒再从头重播，如此往复
+          var HOLD_MS = 5000;   // ← 停留时长(毫秒)，想改几秒改这里
+          v.addEventListener('ended', function () {
+            setTimeout(function () {
+              try { v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+            }, HOLD_MS);
           });
         })();
       </script>
@@ -244,10 +251,10 @@
     </div>
   </div>
 
-  <script src="worldcup-app.js?v=20260612-202617"></script>
-  <script src="worldcup-knockout.js?v=20260612-202617"></script>
-  <script src="worldcup-arena.js?v=20260612-202617"></script>
-  <script src="worldcup-data.js?v=20260612-202617"></script>
-  <script src="worldcup-ui.js?v=20260612-202617"></script>
+  <script src="worldcup-app.js?v=20260612-204339"></script>
+  <script src="worldcup-knockout.js?v=20260612-204339"></script>
+  <script src="worldcup-arena.js?v=20260612-204339"></script>
+  <script src="worldcup-data.js?v=20260612-204339"></script>
+  <script src="worldcup-ui.js?v=20260612-204339"></script>
 </body>
 </html>
