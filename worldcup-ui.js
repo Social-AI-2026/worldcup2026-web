@@ -321,6 +321,7 @@
   function etToBJ(t) {
     // 美东→北京时差 +12,依赖【赛事 6-7 月全程美东夏令时(EDT=UTC-4,北京 UTC+8,差 12h)】成立;
     // 2026 世界杯窗口内永远正确。若移作他用/跨夏冬令时,这个 +12 是写死的假设,需改成按时区库换算。
+    if (!t || t.indexOf(":") < 0) return { time: "", nextDay: false };   // 防御:时间空/无分钟 → 不吐 "12:undefined"
     var p = t.split(":"); var total = (+p[0]) + 12; var nextDay = total >= 24; var bh = total % 24;
     return { time: (bh < 10 ? "0" : "") + bh + ":" + p[1], nextDay: nextDay };
   }
