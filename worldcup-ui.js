@@ -734,7 +734,7 @@
           "<span><b>" + (en ? "Home" : "主") + "</b> " + WC.fimg(f[2]) + " " + WC.nm(f[2]) + "</span>" +
           "<span><b>" + (en ? "Away" : "客") + "</b> " + WC.fimg(f[3]) + " " + WC.nm(f[3]) + "</span>" +
           "<span><b>" + (en ? "Venue" : "场地") + "</b> " + (en ? f[5] : f[4]) + "</span>" +
-          "<span><b>" + (en ? "Kickoff" : "开球") + "</b> " + f[6] + (en ? " ET" : " 美东 / " + etToBJ(f[6]).time + " 北京") + "</span>" +
+          "<span><b>" + (en ? "Kickoff" : "开球") + "</b> " + (f[6] ? (f[6] + (en ? " ET" : " 美东 / " + etToBJ(f[6]).time + " 北京")) : (en ? "TBD" : "待定")) + "</span>" +
         "</div>" +
       "</div>";
     if (!isRevealed(i)) {

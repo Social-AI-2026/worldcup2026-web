@@ -87,7 +87,7 @@
     ["6.13","B","Qatar","Switzerland","旧金山湾区","SF Bay Area","15:00"],
     ["6.13","C","Brazil","Morocco","纽约","New York","18:00"],
     ["6.13","C","Haiti","Scotland","波士顿","Boston","21:00"],
-    ["6.13","D","Australia","Türkiye","温哥华","Vancouver","00:00"],
+    ["6.13","D","Australia","Türkiye","温哥华","Vancouver","24:00"],
     ["6.14","E","Germany","Curaçao","休斯顿","Houston","13:00"],
     ["6.14","E","Côte d'Ivoire","Ecuador","费城","Philadelphia","19:00"],
     ["6.14","F","Netherlands","Japan","达拉斯","Dallas","16:00"],
