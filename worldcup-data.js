@@ -1077,6 +1077,7 @@
     var nameByIdx = A.MODELS.map(function (m) { return m.name; });
 
     var origPredict = A.predict;
+    function realMatchKey(key) { return A.MODELS.some(function (mm) { var dd = PRED[mm.name]; return !!(dd && dd.matches && dd.matches[key]); }); }
     A.predict = function (home, away, mi, idx) {
       var key = WC.flag(home) + '_vs_' + WC.flag(away);
       var d = PRED[nameByIdx[mi]];
@@ -1084,6 +1085,9 @@
       if (m) {
         return { x2: X2[m['胜平负']], hc: hc(m['让球']), ou: OU[m['大小2.5']], bt: BT[m['双方进球']], oe: oe(m['单双']), ht: htf(m['半全场']), cs: cs(m['正确比分']) };
       }
+      // 真值缺失:若该场【其他模型有真数据】(是真比赛)→ 标记「暂缺」,绝不回退 frand 合成器伪造、也不计入打分;
+      // 仅当该场【全无真数据】(纯演示/未来未产出场)才退回合成器,保持原型可看。
+      if (realMatchKey(key)) return { missing: true };
       return origPredict(home, away, mi, idx);
     };
 

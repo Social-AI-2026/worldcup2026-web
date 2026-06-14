@@ -482,6 +482,7 @@
       var av = actualMarketsFor(A, f, res[i]); if (!av) return;
       MODELS.forEach(function (mo, mi) {
         var pr = A.predict(f[2], f[3], mi, i);
+        if (pr.missing) return;                 // 暂缺:不计入打分(绝不拿伪造预测给该模型充数)
         A.MARKETS.forEach(function (mk) {
           if (av[mk.key] == null) return;
           stats[mi].tot++;
@@ -534,11 +535,11 @@
         var t = f[6] ? (en ? f[6] + " ET" : f[6] + " 美东 / " + bj.time + " 北京" + bjd) : (en ? "TBD" : "待定");
         var predHTML;
         if (!A.hasRealMatch || A.hasRealMatch(f[2], f[3])) {           // 有真数据才算共识,否则显示"待解锁"(不展示伪共识)
-          var counts = { H: 0, D: 0, A: 0 };
-          A.MODELS.forEach(function (mo, mi) { counts[A.predict(f[2], f[3], mi, i).x2]++; });
+          var counts = { H: 0, D: 0, A: 0 }, nP = 0;
+          A.MODELS.forEach(function (mo, mi) { var pr = A.predict(f[2], f[3], mi, i); if (pr.missing) return; counts[pr.x2]++; nP++; });
           var cons = "H"; if (counts.D > counts[cons]) cons = "D"; if (counts.A > counts[cons]) cons = "A";
           var ci = A.LBL.x2[cons];
-          predHTML = "<span class='pred pk pk-" + ci.t + "'>" + (en ? ci.en : ci.zh) + " " + counts[cons] + "/6</span>";
+          predHTML = "<span class='pred pk pk-" + ci.t + "'>" + (en ? ci.en : ci.zh) + " " + counts[cons] + "/" + nP + "</span>";
         } else {
           predHTML = "<span class='pred gp'>" + (en ? "Locked" : "待解锁") + "</span>";
         }
@@ -752,6 +753,7 @@
       var settled = aval != null;
       var cells = MODELS.map(function (mo, mi) {
         var pr = A.predict(f[2], f[3], mi, i);
+        if (pr.missing) return "<td><span class='pk pk-dim' title='" + (en ? "Prediction pending — this model is temporarily unavailable" : "本场该模型预测暂缺 · 待补(模型暂不可用)") + "'>" + (en ? "—" : "暂缺") + "</span></td>";
         return "<td>" + chip(A, mk.key, pr[mk.key], en, settled, settled && pr[mk.key] === aval) + "</td>";
       }).join("");
       var acHtml = settled ? "<td class='ac'>" + chip(A, mk.key, aval, en, false, false) + "</td>"
