@@ -694,12 +694,19 @@
 
   /* ---- match picker ---- */
   function dkNum(dk) { var p = ("" + dk).split("."); return (+p[0]) * 100 + (+p[1]); }
+  function todayKeyET() {   // 今日美东 "M.D" —— reveal 自动按日期推进,无需每轮手动 bump REVEAL_THROUGH
+    var etd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" }).split("/");  // [M,D,YYYY]
+    return (+etd[0]) + "." + (+etd[1]);
+  }
   function isRevealed(i) {
-    var A = window.__WC_ARENA; if (!A || !A.REVEAL_THROUGH) return true;
+    var A = window.__WC_ARENA; if (!A) return true;
     var f = WC.FIX[i];
-    // 必须【真有预测数据】才解锁——否则即便 REVEAL_THROUGH 放出了该场,也不把 origPredict 的伪比分当真展示
+    // 必须【真有预测数据】才解锁——否则不把 origPredict 的伪比分当真展示
     if (A.hasRealMatch && !A.hasRealMatch(f[2], f[3])) return false;
-    return dkNum(f[0]) <= dkNum(A.REVEAL_THROUGH);
+    // 自动:reveal 截止 = 今日美东;A.REVEAL_THROUGH 仅作"手动提前揭晓更晚日期"的可选覆盖(取较晚者)
+    var cutoff = dkNum(todayKeyET());
+    if (A.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A.REVEAL_THROUGH));
+    return dkNum(f[0]) <= cutoff;
   }
   function renderAmList(A, en, res) {
     var host = el("wc-amlist"); if (!host) return;
