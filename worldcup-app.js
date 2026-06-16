@@ -99,7 +99,7 @@
     ["6.16","I","France","Senegal","纽约","New York","15:00"],
     ["6.16","I","Iraq","Norway","波士顿","Boston","18:00"],
     ["6.16","J","Argentina","Algeria","堪萨斯城","Kansas City","21:00"],
-    ["6.16","J","Austria","Jordan","旧金山湾区","SF Bay Area",""],
+    ["6.16","J","Austria","Jordan","旧金山湾区","SF Bay Area","24:00"],
     ["6.17","K","Portugal","DR Congo","休斯顿","Houston","13:00"],
     ["6.17","L","England","Croatia","达拉斯","Dallas","16:00"],
     ["6.17","L","Ghana","Panama","多伦多","Toronto","19:00"],
