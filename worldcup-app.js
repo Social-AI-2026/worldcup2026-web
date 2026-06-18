@@ -153,8 +153,19 @@
     ["6.27","L","Panama","England","纽约","New York",""],
     ["6.27","L","Croatia","Ghana","费城","Philadelphia",""],
   ];
-  var DATE_EN = {"6.11":"Jun 11","6.12":"Jun 12","6.13":"Jun 13","6.14":"Jun 14","6.15":"Jun 15","6.16":"Jun 16","6.17":"Jun 17"};
-  var DATE_ZH = {"6.11":"6月11日","6.12":"6月12日","6.13":"6月13日","6.14":"6月14日","6.15":"6月15日","6.16":"6月16日","6.17":"6月17日"};
+  // 按【日期 + 开球时间】排序 FIX —— 与 update_web.py 的 RESULTS 下标(matches.json 按 kickoff_ts 升序生成)契约一致;
+  // 杜绝"日内顺序乱 / 结算张冠李戴"再现(谁来加场都自动归位,无需手排)。日期键按 月*100+日 数值比,空时间(待定)排末。
+  FIX.sort(function (a, b) {
+    function dk(s) { var p = (s || "").split("."); return (+p[0] || 0) * 100 + (+p[1] || 0); }
+    function tm(s) { if (!s || s.indexOf(":") < 0) return 99999; var p = s.split(":"); return (+p[0]) * 60 + (+p[1]); }
+    return dk(a[0]) - dk(b[0]) || tm(a[6]) - tm(b[6]);
+  });
+  // 日期中英文:从 FIX 实际日期【自动生成】,杜绝 DATE_ZH 漏键 → 卡片头显示 "undefined"。
+  var DATE_EN = {}, DATE_ZH = {}, _MOE = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+  FIX.forEach(function (f) {
+    var k = f[0]; if (!k || DATE_ZH[k]) return;
+    var p = k.split("."); DATE_ZH[k] = (+p[0]) + "月" + (+p[1]) + "日"; DATE_EN[k] = _MOE[+p[0]] + " " + (+p[1]);
+  });
 
   // ---- Groups, confederations, derived team facts -------------------------
   var GROUP_OF = {};
