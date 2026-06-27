@@ -146,12 +146,12 @@
     ["6.26","H","Uruguay","Spain","瓜达拉哈拉","Guadalajara","20:00"],
     ["6.26","I","Norway","France","波士顿","Boston","15:00"],
     ["6.26","I","Senegal","Iraq","多伦多","Toronto","15:00"],
-    ["6.27","J","Algeria","Austria","堪萨斯城","Kansas City",""],
-    ["6.27","J","Jordan","Argentina","达拉斯","Dallas",""],
-    ["6.27","K","Colombia","Portugal","迈阿密","Miami",""],
-    ["6.27","K","DR Congo","Uzbekistan","亚特兰大","Atlanta",""],
-    ["6.27","L","Panama","England","纽约","New York",""],
-    ["6.27","L","Croatia","Ghana","费城","Philadelphia",""],
+    ["6.27","J","Algeria","Austria","堪萨斯城","Kansas City","22:00"],
+    ["6.27","J","Jordan","Argentina","达拉斯","Dallas","22:00"],
+    ["6.27","K","Colombia","Portugal","迈阿密","Miami","19:30"],
+    ["6.27","K","DR Congo","Uzbekistan","亚特兰大","Atlanta","19:30"],
+    ["6.27","L","Panama","England","纽约","New York","17:00"],
+    ["6.27","L","Croatia","Ghana","费城","Philadelphia","17:00"],
   ];
   // 按【日期 + 开球时间】排序 FIX —— 与 update_web.py 的 RESULTS 下标(matches.json 按 kickoff_ts 升序生成)契约一致;
   // 杜绝"日内顺序乱 / 结算张冠李戴"再现(谁来加场都自动归位,无需手排)。日期键按 月*100+日 数值比,空时间(待定)排末。
