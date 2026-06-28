@@ -568,16 +568,16 @@ body[data-lang="zh"] .wc-board .matchup { letter-spacing: 0.02em; }
 .wc-lb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--wc-line); }
 .wc-lb-ttl { font-family: var(--wc-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: var(--wc-text); }
 .wc-lb-note { font-family: var(--wc-body); font-weight: 600; font-size: 12px; color: var(--wc-muted); }
-.wc-lb-grid { display: grid; grid-template-columns: repeat(6, 1fr); }
-.wc-lbc { display: flex; align-items: center; gap: 11px; padding: 15px 15px; border-right: 1px solid var(--wc-line); }
+.wc-lb-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.wc-lbc { display: flex; align-items: flex-start; gap: 11px; min-width: 0; padding: 15px 15px; border-right: 1px solid var(--wc-line); }
 .wc-lbc:last-child { border-right: 0; }
 .wc-lbc.lead { background: rgba(255,61,113,0.08); }
 .wc-lbc-rank { font-family: var(--wc-display); font-weight: 700; font-size: 17px; color: var(--wc-dim); width: 18px; flex: none; }
 .wc-lbc.lead .wc-lbc-rank { color: var(--wc-accent); }
 .wc-lbc-main { min-width: 0; flex: 1; }
 .wc-lbc-name { font-family: var(--wc-display); font-weight: 700; font-size: 16px; color: var(--wc-text); }
-.wc-lbc-sub { font-family: var(--wc-body); font-weight: 600; font-size: 11px; color: var(--wc-muted); margin-top: 2px; white-space: nowrap; }
-.wc-lbc-pts { text-align: right; flex: none; }
+.wc-lbc-sub { font-family: var(--wc-body); font-weight: 600; font-size: 11px; line-height: 1.35; color: var(--wc-muted); margin-top: 2px; white-space: normal; overflow-wrap: anywhere; }
+.wc-lbc-pts { text-align: right; flex: none; min-width: 44px; }
 .wc-lbc-pts b { font-family: var(--wc-display); font-weight: 700; font-size: 23px; color: var(--wc-text); display: block; line-height: 1; }
 .wc-lbc-pts span { font-family: var(--wc-body); font-weight: 600; font-size: 10px; color: var(--wc-dim); }
 
@@ -691,10 +691,19 @@ body[data-lang="zh"] .wc-board .matchup { letter-spacing: 0.02em; }
   .wc-amrow { flex: 0 0 auto; min-width: 190px; border-bottom: 0; border-right: 1px solid var(--wc-line); }
   .wc-amrow.sel { box-shadow: inset 0 -3px 0 var(--wc-accent); }
 }
+@media (max-width: 1100px) {
+  .wc-lb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wc-lbc { border-bottom: 1px solid var(--wc-line); }
+  .wc-lbc:nth-child(3n) { border-right: 0; }
+  .wc-lbc:nth-last-child(-n+3) { border-bottom: 0; }
+}
 @media (max-width: 720px) {
-  .wc-lb-grid, .wc-pool-grid { grid-template-columns: repeat(2, 1fr); }
+  .wc-lb-grid, .wc-pool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wc-lbc, .wc-poolc { border-bottom: 1px solid var(--wc-line); }
+  .wc-lbc:nth-child(3n) { border-right: 1px solid var(--wc-line); }
   .wc-lbc:nth-child(2n), .wc-poolc:nth-child(2n) { border-right: 0; }
+  .wc-lbc:nth-last-child(-n+3) { border-bottom: 1px solid var(--wc-line); }
+  .wc-lbc:nth-last-child(-n+2) { border-bottom: 0; }
 }
 
 
