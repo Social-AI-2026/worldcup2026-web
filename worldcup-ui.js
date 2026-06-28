@@ -474,11 +474,26 @@
     Object.keys(p.groups || {}).forEach(function (g) { if (gw[g] && p.groups[g] === gw[g]) s += gwp; });
     return s;
   }
+  function koResolvedFixture(m) {
+    if (!m || !WC.T) return null;
+    var home = m[5], away = m[7];
+    if (!WC.T[home] || !WC.T[away]) return null;
+    return [m[2], "KO", home, away, m[8], m[9], m[3]];
+  }
+  function arenaFixtureRows() {
+    var rows = WC.FIX.map(function (f, i) { return { f: f, idx: i }; });
+    koData().forEach(function (m) {
+      var f = koResolvedFixture(m);
+      if (f) rows.push({ f: f, idx: m[0] - 1 });
+    });
+    return rows;
+  }
 
   function arenaRanked(A) {
-    var MODELS = A.MODELS, FIX = WC.FIX, res = arenaResults();
+    var MODELS = A.MODELS, res = arenaResults();
     var stats = MODELS.map(function (m, i) { return { m: m, idx: i, pts: 0, hit: 0, tot: 0, mpts: 0, gpts: 0 }; });
-    FIX.forEach(function (f, i) {
+    arenaFixtureRows().forEach(function (row) {
+      var f = row.f, i = row.idx;
       var av = actualMarketsFor(A, f, res[i]); if (!av) return;
       MODELS.forEach(function (mo, mi) {
         var pr = A.predict(f[2], f[3], mi, i);
@@ -552,9 +567,19 @@
         var kbj = etToBJ(m[3]); var kp = dateParts(m[2]);
         var t = en ? m[3] + " ET" : m[3] + " 美东 / " + kbj.time + " 北京" + kp.mo + "月" + (kp.dd + (kbj.nextDay ? 1 : 0)) + "日";
         var badge = m[1] === 4 ? (m[0] === 103 ? (en ? "3rd" : "季军赛") : (en ? "Final" : "决赛")) : (en ? KO_SHORT_EN[m[1]] : KO_SHORT_ZH[m[1]]);
+        var f = koResolvedFixture(m), predHTML = "<span class='pred gp'>" + (f ? badge : (en ? "Prov." : "暂定")) + "</span>";
+        if (f && (!A.hasRealMatch || A.hasRealMatch(f[2], f[3]))) {
+          var counts = { H: 0, D: 0, A: 0 }, nP = 0;
+          A.MODELS.forEach(function (mo, mi) { var pr = A.predict(f[2], f[3], mi, m[0] - 1); if (pr.missing) return; counts[pr.x2]++; nP++; });
+          if (nP) {
+            var cons = "H"; if (counts.D > counts[cons]) cons = "D"; if (counts.A > counts[cons]) cons = "A";
+            var ci = A.LBL.x2[cons];
+            predHTML = "<span class='pred pk pk-" + ci.t + "'>" + (en ? ci.en : ci.zh) + " " + counts[cons] + "/" + nP + "</span>";
+          }
+        }
         return "<div class='wc-dtoday-row'><span class='tm'>" + t + "</span>" +
-          "<div class='ln'><span class='mt'>" + (en ? m[5] : m[4]) + " <i>vs</i> " + (en ? m[7] : m[6]) + "</span>" +
-          "<span class='pred gp'>" + badge + "</span></div></div>";
+          "<div class='ln'><span class='mt'>" + (f ? ("<span class='s l'><span class='fl'>" + WC.fimg(f[2]) + "</span>" + WC.nm(f[2]) + "</span> <i>vs</i> <span class='s r'>" + WC.nm(f[3]) + "<span class='fl'>" + WC.fimg(f[3]) + "</span></span>") : ((en ? m[5] : m[4]) + " <i>vs</i> " + (en ? m[7] : m[6]))) + "</span>" +
+          predHTML + "</div></div>";
       }).join("");
     }
     tHost.innerHTML = rows || "<div class='wc-dtoday-empty'>" + (en ? "No matches" : "暂无比赛") + "</div>";
@@ -574,7 +599,9 @@
       }
       renderDashCards(A, en, idxs);
     } else {
-      cardHost.innerHTML = "<div class='wc-dtoday-empty'>" + (en ? "Knockout pairings are bracket slots — per-match cards open once teams are set." : "淘汰赛为占位对阵，球队确定后再开放单场卡。") + "</div>";
+      var kms = (window.__WC_KO.KO || []).filter(function (m) { return m[2] === pickDay.dk && koResolvedFixture(m); });
+      if (kms.length) renderDashKoCards(A, en, kms);
+      else cardHost.innerHTML = "<div class='wc-dtoday-empty'>" + (en ? "Knockout pairings are provisional until bracket slots are decided." : "淘汰赛对阵暂定，球队确定后再开放单场卡。") + "</div>";
     }
   }
 
@@ -593,6 +620,31 @@
     host.innerHTML = "<div class='wc-dc-bar'>" + pager + modes + "</div>" + pick;
     host.querySelectorAll("[data-pg]").forEach(function (b) { b.addEventListener("click", function () { dashPage = +b.getAttribute("data-pg"); renderDashCards(A, en, idxs); }); });
     host.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { dashPaged = (b.getAttribute("data-mode") === "page"); dashPage = 0; renderDashCards(A, en, idxs); }); });
+  }
+
+  function renderDashKoCards(A, en, kms) {
+    var host = el("wc-dash-card-body"); if (!host) return;
+    if (dashPage >= kms.length) dashPage = 0;
+    var pager = (dashPaged && kms.length > 1)
+      ? "<div class='wc-dc-pager'>" + kms.map(function (m, p) { var f = koResolvedFixture(m); return "<button type='button' class='wc-dc-pg" + (p === dashPage ? " on" : "") + "' data-pg='" + p + "'><b>" + m[0] + "</b><span>" + WC.fimg(f[2]) + "-" + WC.fimg(f[3]) + "</span></button>"; }).join("") + "</div>"
+      : "<span class='wc-dc-cnt'>" + kms.length + (en ? " match" + (kms.length > 1 ? "es" : "") : " 场比赛") + "</span>";
+    var modes = "<div class='wc-dc-modes'>" +
+      "<button type='button' class='wc-dc-mode" + (dashPaged ? " on" : "") + "' data-mode='page'>" + (en ? "Paged" : "逐场") + "</button>" +
+      "<button type='button' class='wc-dc-mode" + (dashPaged ? "" : " on") + "' data-mode='all'>" + (en ? "All" : "全部") + "</button></div>";
+    var card = function (m) {
+      var f = koResolvedFixture(m);
+      return "<div class='wc-dash-pickcard'>" + pickCardForFixtureHTML(A, en, {
+        f: f, idx: m[0] - 1, no: m[0],
+        meta: koBadge(m, en) + " · " + dateLabel(m[2], en),
+        revealed: isKoRevealed(m),
+        lockTitle: en ? "Not released yet" : "本场预测待产出",
+        lockBody: en ? "This knockout card opens once the model picks are fixed." : "本场淘汰赛对阵已确定，待模型预测固定后开放。"
+      }, arenaResults()) + "</div>";
+    };
+    var pick = dashPaged ? card(kms[dashPage]) : kms.map(card).join("");
+    host.innerHTML = "<div class='wc-dc-bar'>" + pager + modes + "</div>" + pick;
+    host.querySelectorAll("[data-pg]").forEach(function (b) { b.addEventListener("click", function () { dashPage = +b.getAttribute("data-pg"); renderDashKoCards(A, en, kms); }); });
+    host.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { dashPaged = (b.getAttribute("data-mode") === "page"); dashPage = 0; renderDashKoCards(A, en, kms); }); });
   }
 
   function renderArena() {
@@ -725,6 +777,14 @@
   function slotName(m, side, en) {
     return en ? m[side === "a" ? 5 : 7] : m[side === "a" ? 4 : 6];
   }
+  function isKoRevealed(m) {
+    var A = window.__WC_ARENA, f = koResolvedFixture(m);
+    if (!A || !f) return false;
+    if (A.hasRealMatch && !A.hasRealMatch(f[2], f[3])) return false;
+    var cutoff = dkNum(todayKeyET());
+    if (A.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A.REVEAL_THROUGH));
+    return dkNum(m[2]) <= cutoff;
+  }
   function renderAmList(A, en, res) {
     var host = el("wc-amlist"); if (!host) return;
     var groupRows = WC.FIX.map(function (f, i) {
@@ -739,10 +799,16 @@
       "</button>";
     }).join("");
     var koRows = koData().map(function (m, i) {
-      return "<button type='button' class='wc-amrow wc-amrow-ko locked" + (selCard.type === "ko" && i === selCard.i ? " sel" : "") + "' data-type='ko' data-i='" + i + "'>" +
+      var f = koResolvedFixture(m), rev = isKoRevealed(m);
+      var tt = f
+        ? "<span class='tt'><span class='fl'>" + WC.fimg(f[2]) + "</span><span class='tn l'>" + WC.nm(f[2]) + "</span><i>vs</i><span class='tn r'>" + WC.nm(f[3]) + "</span><span class='fl'>" + WC.fimg(f[3]) + "</span></span>"
+        : "<span class='tt'><span class='tn l'>" + slotName(m, "a", en) + "</span><i>vs</i><span class='tn r'>" + slotName(m, "b", en) + "</span></span>";
+      var tail = f ? "<span class='gp'>" + koBadge(m, en) + "</span>"
+                   : "<span class='gp' title='" + koBadge(m, en) + "'>" + (en ? "Prov." : "暂定") + "</span>";
+      return "<button type='button' class='wc-amrow" + (f ? "" : " wc-amrow-ko") + (selCard.type === "ko" && i === selCard.i ? " sel" : "") + (rev ? "" : " locked") + "' data-type='ko' data-i='" + i + "'>" +
         "<span class='no'>#" + m[0] + "</span>" +
-        "<span class='tt'><span class='tn l'>" + slotName(m, "a", en) + "</span><i>vs</i><span class='tn r'>" + slotName(m, "b", en) + "</span></span>" +
-        "<span class='gp' title='" + koBadge(m, en) + "'>" + (en ? "TBD" : "待定") + "</span>" +
+        tt +
+        tail +
       "</button>";
     }).join("");
     host.innerHTML = groupRows + koRows;
@@ -755,14 +821,14 @@
   }
 
   /* ---- per-match pick card (7 markets) ---- */
-  function pickCardHTML(A, en, i, res) {
-    var MODELS = A.MODELS, f = WC.FIX[i];
+  function pickCardForFixtureHTML(A, en, opt, res) {
+    var MODELS = A.MODELS, f = opt.f, i = opt.idx, no = opt.no;
     var sc = res[i], actual = actualMarketsFor(A, f, sc), line = A.handLine(f[2], f[3]);
     var ftStr = sc ? ("" + sc).split("/")[0] : "";
     var head =
       "<div class='wc-amc-head'>" +
-        "<div class='wc-amc-top'><span class='wc-amc-tag'>" + (en ? "Pick card · #" : "竞猜卡 · 第") + (i + 1) + (en ? "" : " 场") + "</span>" +
-          "<span class='wc-amc-meta'>" + (en ? "Grp " + f[1] : f[1] + "组") + " · " + (en ? WC.DATE_EN[f[0]] : WC.DATE_ZH[f[0]]) + (sc ? " · " + (en ? "FT" : "完场") : "") + "</span></div>" +
+        "<div class='wc-amc-top'><span class='wc-amc-tag'>" + (en ? "Pick card · #" : "竞猜卡 · 第") + no + (en ? "" : " 场") + "</span>" +
+          "<span class='wc-amc-meta'>" + opt.meta + (sc ? " · " + (en ? "FT" : "完场") : "") + "</span></div>" +
         "<div class='wc-amc-match'><span class='t'><span class='fl'>" + WC.fimg(f[2]) + "</span>" + WC.nm(f[2]) + "</span>" +
           "<span class='sc" + (sc ? " done" : "") + "'>" + (ftStr ? ftStr.replace(":", " : ") : (en ? "vs" : "vs")) + "</span>" +
           "<span class='t r'>" + WC.nm(f[3]) + "<span class='fl'>" + WC.fimg(f[3]) + "</span></span></div>" +
@@ -773,10 +839,10 @@
           "<span><b>" + (en ? "Kickoff" : "开球") + "</b> " + (f[6] ? (f[6] + (en ? " ET" : " 美东 / " + etToBJ(f[6]).time + " 北京")) : (en ? "TBD" : "待定")) + "</span>" +
         "</div>" +
       "</div>";
-    if (!isRevealed(i)) {
+    if (!opt.revealed) {
       return head + "<div class='wc-amc-locked'><span class='lk'>🔒</span>" +
-        "<b>" + (en ? "Not released yet" : "本场预测待产出") + "</b>" +
-        "<span>" + (en ? "Predictions are published day by day — this match opens on " + WC.DATE_EN[f[0]] + "." : "预测逐日产出，本场将在比赛日（" + WC.DATE_ZH[f[0]] + "）当天公布。") + "</span></div>";
+        "<b>" + opt.lockTitle + "</b>" +
+        "<span>" + opt.lockBody + "</span></div>";
     }
     var thead = "<thead><tr><th class='mk'>" + (en ? "Market & rule" : "玩法 · 规则") + "</th>" +
       "<th class='ac'>" + (en ? "Result" : "赛果") + "</th>" +
@@ -798,9 +864,31 @@
     }).join("");
     return head + "<div class='wc-amc-scroll'><table class='wc-amc-tbl'>" + thead + "<tbody>" + rows + "</tbody></table></div>";
   }
-  function koPickCardHTML(en, i) {
+  function pickCardHTML(A, en, i, res) {
+    var f = WC.FIX[i];
+    return pickCardForFixtureHTML(A, en, {
+      f: f, idx: i, no: i + 1,
+      meta: (en ? "Grp " + f[1] : f[1] + "组") + " · " + (en ? WC.DATE_EN[f[0]] : WC.DATE_ZH[f[0]]),
+      revealed: isRevealed(i),
+      lockTitle: en ? "Not released yet" : "本场预测待产出",
+      lockBody: en ? "Predictions are published day by day — this match opens on " + WC.DATE_EN[f[0]] + "."
+                   : "预测逐日产出，本场将在比赛日（" + WC.DATE_ZH[f[0]] + "）当天公布。"
+    }, res);
+  }
+  function koPickCardHTML(A, en, i, res) {
     var m = koData()[i];
     if (!m) return "<div class='wc-amc-locked'><span class='lk'>—</span><b>" + (en ? "No match selected" : "未选择比赛") + "</b></div>";
+    var f = koResolvedFixture(m);
+    if (f) {
+      return pickCardForFixtureHTML(A, en, {
+        f: f, idx: m[0] - 1, no: m[0],
+        meta: koBadge(m, en) + " · " + dateLabel(m[2], en),
+        revealed: isKoRevealed(m),
+        lockTitle: en ? "Not released yet" : "本场预测待产出",
+        lockBody: en ? "This knockout card opens once the model picks are fixed."
+                     : "本场淘汰赛对阵已确定，待模型预测固定后开放。"
+      }, res);
+    }
     var head =
       "<div class='wc-amc-head'>" +
         "<div class='wc-amc-top'><span class='wc-amc-tag'>" + (en ? "Pick card · #" : "竞猜卡 · 第") + m[0] + (en ? "" : " 场") + "</span>" +
@@ -816,12 +904,12 @@
         "</div>" +
       "</div>";
     return head + "<div class='wc-amc-locked'><span class='lk'>🔒</span>" +
-      "<b>" + (en ? "Pending knockout card" : "淘汰赛竞猜卡待定") + "</b>" +
-      "<span>" + (en ? "This fixture is scheduled, but exact teams and model picks are not fixed yet. It will open after the bracket slot is decided and predictions are published." : "本场赛程已排定，但具体球队和模型预测尚未确定。待括号席位确定并完成预测后，这张卡会开放。") + "</span></div>";
+      "<b>" + (en ? "Provisional knockout card" : "淘汰赛竞猜卡暂定") + "</b>" +
+      "<span>" + (en ? "This fixture is scheduled, but the exact teams are not fixed yet. It will open after the bracket slot is decided and predictions are published." : "本场赛程已排定，但具体球队尚未确定。待括号席位确定并完成预测后，这张卡会开放。") + "</span></div>";
   }
   function renderAmCard(A, en, res) {
     var host = el("wc-amcard"); if (!host) return;
-    host.innerHTML = selCard.type === "ko" ? koPickCardHTML(en, selCard.i) : pickCardHTML(A, en, selCard.i, res);
+    host.innerHTML = selCard.type === "ko" ? koPickCardHTML(A, en, selCard.i, res) : pickCardHTML(A, en, selCard.i, res);
   }
 
 
