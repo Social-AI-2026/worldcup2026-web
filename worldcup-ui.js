@@ -463,17 +463,22 @@
     return A.fromScore(+ft[0], +ft[1], hh, ha, A.handLine(f[2], f[3]));
   }
   function gpts(A, key) { var m = (A.GLOBAL || []).filter(function (x) { return x.key === key; })[0]; return m ? m.pts : 0; }
-  function globalScore(A, mi) {
+  function poolScore(A, mi) {
     var p = A.poolPick(mi), s = 0;
     if (A.CHAMPION && p.champ === A.CHAMPION) s += gpts(A, "champ");
     if ((A.FINALISTS || []).length) p.final.forEach(function (t) { if (A.FINALISTS.indexOf(t) >= 0) s += gpts(A, "final"); });
     if ((A.SEMIS || []).length) p.semi.forEach(function (t) { if (A.SEMIS.indexOf(t) >= 0) s += gpts(A, "semi"); });
     if (A.WINNER_CONF && p.conf === A.WINNER_CONF) s += gpts(A, "conf");
     if (A.TOTAL_GOALS != null && p.goals === (A.TOTAL_GOALS > A.GOALS_LINE ? "O" : "U")) s += gpts(A, "goals");
+    return s;
+  }
+  function groupWinnerScore(A, mi) {
+    var p = A.poolPick(mi), s = 0;
     var gw = A.GROUP_WINNERS || {}, gwp = A.GW_PTS || 1;
     Object.keys(p.groups || {}).forEach(function (g) { if (gw[g] && p.groups[g] === gw[g]) s += gwp; });
     return s;
   }
+  function globalScore(A, mi) { return poolScore(A, mi) + groupWinnerScore(A, mi); }
   function koResolvedFixture(m) {
     if (!m || !WC.T) return null;
     var home = m[5], away = m[7];
@@ -491,7 +496,7 @@
 
   function arenaRanked(A) {
     var MODELS = A.MODELS, res = arenaResults();
-    var stats = MODELS.map(function (m, i) { return { m: m, idx: i, pts: 0, hit: 0, tot: 0, mpts: 0, gpts: 0 }; });
+    var stats = MODELS.map(function (m, i) { return { m: m, idx: i, pts: 0, hit: 0, tot: 0, mpts: 0, gwpts: 0, gpts: 0 }; });
     arenaFixtureRows().forEach(function (row) {
       var f = row.f, i = row.idx;
       var av = actualMarketsFor(A, f, res[i]); if (!av) return;
@@ -505,7 +510,10 @@
         });
       });
     });
-    MODELS.forEach(function (mo, mi) { var g = globalScore(A, mi); stats[mi].pts += g; stats[mi].gpts = g; });
+    MODELS.forEach(function (mo, mi) {
+      var gw = groupWinnerScore(A, mi), g = poolScore(A, mi);
+      stats[mi].pts += gw + g; stats[mi].gwpts = gw; stats[mi].gpts = g;
+    });
     return { ranked: stats.slice().sort(function (a, b) { return b.pts - a.pts || b.hit - a.hit || a.idx - b.idx; }), settledN: Object.keys(res).length };
   }
 
@@ -669,7 +677,7 @@
         return "<div class='wc-lbc" + lead + "'>" +
           "<div class='wc-lbc-rank'>" + (r + 1) + "</div>" +
           "<div class='wc-lbc-main'><div class='wc-lbc-name'>" + s.m.name + "</div>" +
-            "<div class='wc-lbc-sub'>" + (en ? "match " + s.mpts + " · pool " + s.gpts : "单场 " + s.mpts + " · 全局 " + s.gpts) + "</div></div>" +
+            "<div class='wc-lbc-sub'>" + (en ? "match " + s.mpts + " · groups " + s.gwpts + " · pool " + s.gpts : "单场 " + s.mpts + " · 头名 " + s.gwpts + " · 全局 " + s.gpts) + "</div></div>" +
           "<div class='wc-lbc-pts'><b>" + s.pts + "</b><span>" + (en ? "pts" : "分") + "</span></div>" +
         "</div>";
       }).join("") + "</div>";
