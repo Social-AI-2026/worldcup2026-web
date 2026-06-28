@@ -424,7 +424,7 @@
   }
 
   /* --------------------------------------------------- model arena */
-  var selMatch = 0;
+  var selCard = { type: "group", i: 0 };
   var dashSel = 0;
   var dashPaged = true, dashPage = 0;   // 全部竞猜卡:翻页 / 全部列出
   function arenaResults() { var A = window.__WC_ARENA; return (A && A.RESULTS) || {}; }
@@ -708,21 +708,49 @@
     if (A.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A.REVEAL_THROUGH));
     return dkNum(f[0]) <= cutoff;
   }
+  function koBadge(m, en) {
+    if (m[1] === 4) return m[0] === 103 ? (en ? "3rd" : "季军赛") : (en ? "Final" : "决赛");
+    return en ? KO_SHORT_EN[m[1]] : KO_SHORT_ZH[m[1]];
+  }
+  function dateLabel(dk, en) {
+    var P = dateParts(dk);
+    return en ? MON_EN[P.mo] + " " + P.dd : P.mo + "月" + P.dd + "日";
+  }
+  function kickoffLabel(et, dk, en) {
+    if (!et) return en ? "TBD" : "待定";
+    if (en) return et + " ET";
+    var bj = etToBJ(et), P = dateParts(dk);
+    return et + " 美东 / " + bj.time + " 北京" + P.mo + "月" + (P.dd + (bj.nextDay ? 1 : 0)) + "日";
+  }
+  function slotName(m, side, en) {
+    return en ? m[side === "a" ? 5 : 7] : m[side === "a" ? 4 : 6];
+  }
   function renderAmList(A, en, res) {
     var host = el("wc-amlist"); if (!host) return;
-    host.innerHTML = WC.FIX.map(function (f, i) {
+    var groupRows = WC.FIX.map(function (f, i) {
       var done = !!res[i], rev = isRevealed(i);
       var tail = done ? "<span class='dn'>" + ("" + res[i]).split("/")[0] + "</span>"
         : rev ? "<span class='gp'>" + (en ? "Grp " + f[1] : f[1] + "组") + "</span>"
         : "<span class='lk' title='" + (en ? "Not released yet" : "待产出") + "'>🔒</span>";
-      return "<button type='button' class='wc-amrow" + (i === selMatch ? " sel" : "") + (rev ? "" : " locked") + "' data-i='" + i + "'>" +
+      return "<button type='button' class='wc-amrow" + (selCard.type === "group" && i === selCard.i ? " sel" : "") + (rev ? "" : " locked") + "' data-type='group' data-i='" + i + "'>" +
         "<span class='no'>#" + (i + 1) + "</span>" +
         "<span class='tt'><span class='fl'>" + WC.fimg(f[2]) + "</span><span class='tn l'>" + WC.nm(f[2]) + "</span><i>vs</i><span class='tn r'>" + WC.nm(f[3]) + "</span><span class='fl'>" + WC.fimg(f[3]) + "</span></span>" +
         tail +
       "</button>";
     }).join("");
+    var koRows = koData().map(function (m, i) {
+      return "<button type='button' class='wc-amrow wc-amrow-ko locked" + (selCard.type === "ko" && i === selCard.i ? " sel" : "") + "' data-type='ko' data-i='" + i + "'>" +
+        "<span class='no'>#" + m[0] + "</span>" +
+        "<span class='tt'><span class='tn l'>" + slotName(m, "a", en) + "</span><i>vs</i><span class='tn r'>" + slotName(m, "b", en) + "</span></span>" +
+        "<span class='gp' title='" + koBadge(m, en) + "'>" + (en ? "TBD" : "待定") + "</span>" +
+      "</button>";
+    }).join("");
+    host.innerHTML = groupRows + koRows;
     host.querySelectorAll(".wc-amrow").forEach(function (b) {
-      b.addEventListener("click", function () { selMatch = +b.getAttribute("data-i"); renderAmList(A, en, arenaResults()); renderAmCard(A, en, arenaResults()); });
+      b.addEventListener("click", function () {
+        selCard = { type: b.getAttribute("data-type") || "group", i: +b.getAttribute("data-i") };
+        renderAmList(A, en, arenaResults()); renderAmCard(A, en, arenaResults());
+      });
     });
   }
 
@@ -770,9 +798,30 @@
     }).join("");
     return head + "<div class='wc-amc-scroll'><table class='wc-amc-tbl'>" + thead + "<tbody>" + rows + "</tbody></table></div>";
   }
+  function koPickCardHTML(en, i) {
+    var m = koData()[i];
+    if (!m) return "<div class='wc-amc-locked'><span class='lk'>—</span><b>" + (en ? "No match selected" : "未选择比赛") + "</b></div>";
+    var head =
+      "<div class='wc-amc-head'>" +
+        "<div class='wc-amc-top'><span class='wc-amc-tag'>" + (en ? "Pick card · #" : "竞猜卡 · 第") + m[0] + (en ? "" : " 场") + "</span>" +
+          "<span class='wc-amc-meta'>" + koBadge(m, en) + " · " + dateLabel(m[2], en) + "</span></div>" +
+        "<div class='wc-amc-match wc-amc-match-ko'><span class='t'>" + slotName(m, "a", en) + "</span>" +
+          "<span class='sc'>" + (en ? "vs" : "vs") + "</span>" +
+          "<span class='t r'>" + slotName(m, "b", en) + "</span></div>" +
+        "<div class='wc-amc-legend'>" +
+          "<span><b>" + (en ? "Slot" : "主位") + "</b> " + slotName(m, "a", en) + "</span>" +
+          "<span><b>" + (en ? "Slot" : "客位") + "</b> " + slotName(m, "b", en) + "</span>" +
+          "<span><b>" + (en ? "Venue" : "场地") + "</b> " + (en ? m[9] : m[8]) + "</span>" +
+          "<span><b>" + (en ? "Kickoff" : "开球") + "</b> " + kickoffLabel(m[3], m[2], en) + "</span>" +
+        "</div>" +
+      "</div>";
+    return head + "<div class='wc-amc-locked'><span class='lk'>🔒</span>" +
+      "<b>" + (en ? "Pending knockout card" : "淘汰赛竞猜卡待定") + "</b>" +
+      "<span>" + (en ? "This fixture is scheduled, but exact teams and model picks are not fixed yet. It will open after the bracket slot is decided and predictions are published." : "本场赛程已排定，但具体球队和模型预测尚未确定。待括号席位确定并完成预测后，这张卡会开放。") + "</span></div>";
+  }
   function renderAmCard(A, en, res) {
     var host = el("wc-amcard"); if (!host) return;
-    host.innerHTML = pickCardHTML(A, en, selMatch, res);
+    host.innerHTML = selCard.type === "ko" ? koPickCardHTML(en, selCard.i) : pickCardHTML(A, en, selCard.i, res);
   }
 
 
