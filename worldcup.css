@@ -698,12 +698,17 @@ body[data-lang="zh"] .wc-board .matchup { letter-spacing: 0.02em; }
   .wc-lbc:nth-last-child(-n+3) { border-bottom: 0; }
 }
 @media (max-width: 720px) {
-  .wc-lb-grid, .wc-pool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wc-lb-grid { grid-template-columns: 1fr; }
+  .wc-pool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wc-lbc, .wc-poolc { border-bottom: 1px solid var(--wc-line); }
-  .wc-lbc:nth-child(3n) { border-right: 1px solid var(--wc-line); }
-  .wc-lbc:nth-child(2n), .wc-poolc:nth-child(2n) { border-right: 0; }
+  .wc-lbc { border-right: 0; padding: 13px 14px; }
+  .wc-lbc:nth-child(3n) { border-right: 0; }
+  .wc-poolc:nth-child(2n) { border-right: 0; }
   .wc-lbc:nth-last-child(-n+3) { border-bottom: 1px solid var(--wc-line); }
-  .wc-lbc:nth-last-child(-n+2) { border-bottom: 0; }
+  .wc-lbc:last-child { border-bottom: 0; }
+  .wc-lbc-name { font-size: 15px; }
+  .wc-lbc-pts { min-width: 54px; }
+  .wc-lbc-pts b { font-size: 22px; }
 }
 
 
