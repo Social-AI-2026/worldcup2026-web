@@ -808,11 +808,12 @@
       "</button>";
     }).join("");
     var koRows = koData().map(function (m, i) {
-      var f = koResolvedFixture(m), rev = isKoRevealed(m);
+      var f = koResolvedFixture(m), rev = isKoRevealed(m), done = !!res[m[0] - 1];
       var tt = f
         ? "<span class='tt'><span class='fl'>" + WC.fimg(f[2]) + "</span><span class='tn l'>" + WC.nm(f[2]) + "</span><i>vs</i><span class='tn r'>" + WC.nm(f[3]) + "</span><span class='fl'>" + WC.fimg(f[3]) + "</span></span>"
         : "<span class='tt'><span class='tn l'>" + slotName(m, "a", en) + "</span><i>vs</i><span class='tn r'>" + slotName(m, "b", en) + "</span></span>";
-      var tail = f ? "<span class='gp'>" + koBadge(m, en) + "</span>"
+      var tail = done ? "<span class='dn'>" + ("" + res[m[0] - 1]).split("/")[0] + "</span>"
+                   : f ? "<span class='gp'>" + koBadge(m, en) + "</span>"
                    : "<span class='gp' title='" + koBadge(m, en) + "'>" + (en ? "Prov." : "暂定") + "</span>";
       return "<button type='button' class='wc-amrow" + (f ? "" : " wc-amrow-ko") + (selCard.type === "ko" && i === selCard.i ? " sel" : "") + (rev ? "" : " locked") + "' data-type='ko' data-i='" + i + "'>" +
         "<span class='no'>#" + m[0] + "</span>" +
