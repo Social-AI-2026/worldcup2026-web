@@ -133,7 +133,10 @@
     "JOR_vs_ARG": 2.0,
     "COL_vs_POR": 0.5,
     "COD_vs_UZB": -0.5,
-    "RSA_vs_CAN": 1.0
+    "RSA_vs_CAN": 1.0,
+    "BRA_vs_JPN": -0.5,
+    "GER_vs_PAR": -1.5,
+    "NED_vs_MAR": -0.5
   };   // 固定真实盘口(主队让球数,负=主让;多方赔率核对)
   function handLine(home, away) {
     var WC = window.__WC, k = WC.flag(home) + "_vs_" + WC.flag(away); if (HCP[k] != null) return HCP[k];

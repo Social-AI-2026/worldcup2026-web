@@ -788,7 +788,8 @@
   function isKoRevealed(m) {
     var A = window.__WC_ARENA, f = koResolvedFixture(m);
     if (!A || !f) return false;
-    if (A.hasRealMatch && !A.hasRealMatch(f[2], f[3])) return false;
+    if (A.hasRealMatch && A.hasRealMatch(f[2], f[3])) return true;
+    if (A.hasRealMatch) return false;
     var cutoff = dkNum(todayKeyET());
     if (A.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A.REVEAL_THROUGH));
     return dkNum(m[2]) <= cutoff;
