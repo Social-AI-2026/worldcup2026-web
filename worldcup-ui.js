@@ -266,12 +266,14 @@
   }
   function groupRow(f, dk, en) {
     var no = WC.FIX.indexOf(f) + 1;
+    var sc = arenaResults()[no - 1], ft = sc ? ("" + sc).split("/")[0] : null;   // 已结算→比分,否则 vs
+    var mid = ft ? "<span class='sc'>" + ft.replace(":", " : ") + "</span>" : "<span class='vs'>vs</span>";
     return "<div class='wc-mrow'>" +
       "<div class='wc-m-time'>" + timeCell(f[6], dk, en) + "</div>" +
       "<span class='wc-m-grp'><b>" + (en ? "Grp " + f[1] : f[1] + "组") + "</b><i>" + (en ? "#" + no : "第" + no + "场") + "</i></span>" +
       "<div class='wc-m-teams'>" +
         "<span class='t'><span class='fl'>" + WC.fimg(f[2]) + "</span>" + WC.nm(f[2]) + "</span>" +
-        "<span class='vs'>vs</span>" +
+        mid +
         "<span class='t r'>" + WC.nm(f[3]) + "<span class='fl'>" + WC.fimg(f[3]) + "</span></span>" +
       "</div>" +
       "<span class='wc-m-venue'>" + (en ? f[5] : f[4]) + "</span>" +
@@ -279,12 +281,14 @@
   }
   function koRow(m, en) {
     var badge = m[1] === 4 ? (m[0] === 103 ? (en ? "3rd" : "季军赛") : (en ? "Final" : "决赛")) : (en ? KO_SHORT_EN[m[1]] : KO_SHORT_ZH[m[1]]);
+    var sc = arenaResults()[m[0] - 1], ft = sc ? ("" + sc).split("/")[0] : null;   // 已结算→比分,否则 vs
+    var mid = ft ? "<span class='sc'>" + ft.replace(":", " : ") + "</span>" : "<span class='vs'>vs</span>";
     return "<div class='wc-mrow'>" +
       "<div class='wc-m-time'>" + timeCell(m[3], m[2], en) + "</div>" +
       "<span class='wc-m-grp'><b>" + badge + "</b><i>" + (en ? "#" + m[0] : "第" + m[0] + "场") + "</i></span>" +
       "<div class='wc-m-teams ko'>" +
         "<span class='t'>" + (en ? m[5] : m[4]) + "</span>" +
-        "<span class='vs'>vs</span>" +
+        mid +
         "<span class='t r'>" + (en ? m[7] : m[6]) + "</span>" +
       "</div>" +
       "<span class='wc-m-venue'>" + (en ? m[9] : m[8]) + "</span>" +

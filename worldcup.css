@@ -424,6 +424,7 @@ body.dark-theme.layout-pill .hero .btn:hover { transform: translateY(-2px); bord
 .wc-m-teams .t.r { justify-content: flex-end; text-align: right; }
 .wc-m-teams .t .fl { font-size: 19px; line-height: 1; flex: none; }
 .wc-m-teams .vs { font-family: var(--wc-display); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; color: var(--wc-accent); }
+.wc-m-teams .sc { font-family: var(--wc-display); font-weight: 700; font-size: 15.5px; color: var(--wc-text); white-space: nowrap; letter-spacing: 0.04em; }
 .wc-m-venue { justify-self: end; text-align: right; font-family: var(--wc-body); font-weight: 600; font-size: 12px; color: var(--wc-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 @media (max-width: 760px) {
   .wc-mrow { grid-template-columns: 104px 1fr; grid-template-areas: "time teams" "grp venue"; gap: 8px 14px; }
