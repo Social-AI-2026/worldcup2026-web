@@ -807,7 +807,7 @@
         tail +
       "</button>";
     }).join("");
-    var koRows = koData().map(function (m, i) {
+    var koRows = koData().map(function (m, i) { return { m: m, oi: i }; }).sort(function (a, b) { function dk(s){var p=(s||"").split(".");return (+p[0]||0)*100+(+p[1]||0);} function tm(s){if(!s||s.indexOf(":")<0)return 99999;var p=s.split(":");return (+p[0])*60+(+p[1]);} return dk(a.m[2])-dk(b.m[2])||tm(a.m[3])-tm(b.m[3]); }).map(function (o) { var m = o.m, i = o.oi;
       var f = koResolvedFixture(m), rev = isKoRevealed(m), done = !!res[m[0] - 1];
       var tt = f
         ? "<span class='tt'><span class='fl'>" + WC.fimg(f[2]) + "</span><span class='tn l'>" + WC.nm(f[2]) + "</span><i>vs</i><span class='tn r'>" + WC.nm(f[3]) + "</span><span class='fl'>" + WC.fimg(f[3]) + "</span></span>"
