@@ -425,6 +425,35 @@
 
   /* --------------------------------------------------- model arena */
   var selCard = { type: "group", i: 0 };
+  var arenaInited = false, amScrollPending = false;
+  // 擂台首次进入默认选「今日/下一比赛日」第一场(按开球时间最早),而非揭幕战;复用赛程日历,每天自动跟进。
+  function todaySelCard() {
+    var etd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" }).split("/");
+    var todayNum = (+etd[2] === 2026 ? (+etd[0]) * 100 + (+etd[1]) : 611);
+    var days = allDays().slice().sort(function (a, b) {
+      var pa = dateParts(a.dk), pb = dateParts(b.dk);
+      return (pa.mo * 100 + pa.dd) - (pb.mo * 100 + pb.dd);
+    });
+    var pick = null;
+    for (var k = 0; k < days.length; k++) {
+      var P = dateParts(days[k].dk);
+      if (P.mo * 100 + P.dd >= todayNum) { pick = days[k]; break; }
+    }
+    if (!pick) pick = days[days.length - 1];
+    if (!pick) return { type: "group", i: 0 };
+    if (pick.type === "group") {
+      for (var i = 0; i < WC.FIX.length; i++) if (WC.FIX[i][0] === pick.dk) return { type: "group", i: i };
+    } else {
+      var best = null, bestT = 1e9;
+      koData().forEach(function (m, oi) {
+        if (m[2] !== pick.dk) return;
+        var p = (m[3] || "0:0").split(":"), t = (+p[0]) * 60 + (+p[1]);
+        if (t < bestT) { bestT = t; best = oi; }
+      });
+      if (best != null) return { type: "ko", i: best };
+    }
+    return { type: "group", i: 0 };
+  }
   var dashSel = 0;
   var dashPaged = true, dashPage = 0;   // 全部竞猜卡:翻页 / 全部列出
   function arenaResults() { var A = window.__WC_ARENA; return (A && A.RESULTS) || {}; }
@@ -658,6 +687,7 @@
   function renderArena() {
     var A = window.__WC_ARENA, lb = el("wc-lb");
     if (!A || !lb) return;
+    if (!arenaInited) { selCard = todaySelCard(); arenaInited = true; amScrollPending = true; }   // 首次进擂台:默认今日场 + 触发列表居中定位
     var en = WC.getLang() === "en";
     var MODELS = A.MODELS, FIX = WC.FIX, res = arenaResults();
 
@@ -822,6 +852,15 @@
       "</button>";
     }).join("");
     host.innerHTML = groupRows + koRows;
+    if (amScrollPending) {   // 首次默认今日场:把列表滚到选中行【居中】——只滚 wc-amlist 容器、不动整页;首尾场次(揭幕/决赛)居中不了会自动靠边
+      amScrollPending = false;
+      var selr = host.querySelector(".wc-amrow.sel");
+      if (selr) {
+        var hr = host.getBoundingClientRect(), sr = selr.getBoundingClientRect();
+        host.scrollTop += (sr.top - hr.top) - (host.clientHeight - selr.offsetHeight) / 2;
+        host.scrollLeft += (sr.left - hr.left) - (host.clientWidth - selr.offsetWidth) / 2;
+      }
+    }
     host.querySelectorAll(".wc-amrow").forEach(function (b) {
       b.addEventListener("click", function () {
         selCard = { type: b.getAttribute("data-type") || "group", i: +b.getAttribute("data-i") };
