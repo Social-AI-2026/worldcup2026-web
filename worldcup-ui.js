@@ -328,10 +328,32 @@
   function renderGroups() {
     var host = el("wc-groups"); if (!host) return;
     var en = WC.getLang() === "en";
-    var G = WC.groups();
+    var G = WC.groups(), res = arenaResults();
+    var A = window.__WC_ARENA || {}, gw = A.GROUP_WINNERS || {};
+    // 晋级 32 队码集合(用于判定"晋级的 8 个小组第三名")——取已落地淘汰赛对阵里的实队
+    var adv = {};
+    koData().forEach(function (m) { var f = koResolvedFixture(m); if (f) { adv[f[2]] = 1; adv[f[3]] = 1; } });
+    // 从小组赛比分算 积分/净胜球/进球(res 格式 "全场:比分/半场",下标=FIX 序)
+    var st = {};
+    function ens(t) { return st[t] || (st[t] = { pts: 0, gd: 0, gf: 0 }); }
+    WC.FIX.forEach(function (f, i) {
+      var sc = res[i]; if (!sc) return;
+      var ft = ("" + sc).split("/")[0].split(":"); if (ft.length < 2) return;
+      var h = +ft[0], a = +ft[1]; if (isNaN(h) || isNaN(a)) return;
+      var H = ens(f[2]), B = ens(f[3]);
+      H.gf += h; B.gf += a; H.gd += h - a; B.gd += a - h;
+      if (h > a) H.pts += 3; else if (h < a) B.pts += 3; else { H.pts++; B.pts++; }
+    });
     host.innerHTML = Object.keys(G).map(function (k) {
-      var rows = G[k].map(function (tm) {
-        return "<div class='wc-grow'>" +
+      var teams = G[k].slice().sort(function (x, y) {
+        if (x === gw[k]) return -1; if (y === gw[k]) return 1;   // 官方头名强制排第 1(最稳,不靠算法)
+        var sx = ens(x), sy = ens(y);
+        return sy.pts - sx.pts || sy.gd - sx.gd || sy.gf - sx.gf; // 其余:积分>净胜球>进球
+      });
+      var rows = teams.map(function (tm, idx) {
+        var cls = idx === 0 ? " r1" : idx === 1 ? " r2" : (idx === 2 && adv[tm] ? " r3q" : "");
+        return "<div class='wc-grow" + cls + "'>" +
+          "<span class='rk'>" + (idx + 1) + "</span>" +
           "<span class='fl'>" + WC.fimg(tm) + "</span>" +
           "<span class='nm'>" + WC.nm(tm) + "</span>" +
           "<span class='cf'>" + WC.confLabel(tm) + "</span>" +
