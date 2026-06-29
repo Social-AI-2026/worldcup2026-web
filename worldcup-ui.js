@@ -576,7 +576,7 @@
     if (lbHost) {
       var rk = arenaRanked(A);
       lbHost.innerHTML = rk.ranked.map(function (s, r) {
-        return "<div class='wc-dlb-row" + (r === 0 && s.pts > 0 ? " lead" : "") + "'>" +
+        return "<div class='wc-dlb-row" + (s.pts > 0 ? (r === 0 ? " m1" : r === 1 ? " m2" : r === 2 ? " m3" : "") : "") + "'>" +
           "<span class='r'>" + (r + 1) + "</span>" +
           "<span class='nm'>" + s.m.name + "</span>" +
           "<span class='pt'>" + s.pts + "<i>" + (en ? "pts" : "分") + "</i></span>" +
@@ -724,7 +724,7 @@
           ? (en ? settledN + " / " + TOTAL_MATCHES + " matches settled" : settledN + " / " + TOTAL_MATCHES + " 场已结算")
           : (en ? "Locked · awaiting kickoff" : "已锁定 · 待开赛结算")) + "</span></div>" +
       "<div class='wc-lb-grid'>" + ranked.map(function (s, r) {
-        var lead = r === 0 && s.pts > 0 ? " lead" : "";
+        var lead = s.pts > 0 ? (r === 0 ? " m1" : r === 1 ? " m2" : r === 2 ? " m3" : "") : "";   // 前三名 金/银/铜
         var acc = s.tot ? Math.round(s.hit / s.tot * 100) + "%" : "—";
         return "<div class='wc-lbc" + lead + "'>" +
           "<div class='wc-lbc-rank'>" + (r + 1) + "</div>" +
