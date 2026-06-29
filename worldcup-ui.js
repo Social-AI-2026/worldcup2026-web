@@ -304,7 +304,7 @@
       tag = en ? "Group stage" : "小组赛";
       meta = gm.length + (en ? " fixtures · ET / Beijing" : " 场 · 美东 / 北京时间");
     } else {
-      var km = koData().filter(function (m) { return m[2] === dk; });
+      var km = koData().filter(function (m) { return m[2] === dk; }).sort(function (a, b) { var T = function (s) { var p = (s || "0:0").split(":"); return (+p[0]) * 60 + (+p[1]); }; return T(a[3]) - T(b[3]); });
       rows = km.map(function (m) { return koRow(m, en); }).join("");
       tag = en ? "Knockout" : "淘汰赛";
       meta = km.length + (en ? " matches · bracket slots" : " 场 · 占位对阵");
@@ -571,7 +571,7 @@
           predHTML + "</div></div>";
       });
     } else {
-      rows = (window.__WC_KO.KO || []).filter(function (m) { return m[2] === pickDay.dk; }).map(function (m) {
+      rows = (window.__WC_KO.KO || []).filter(function (m) { return m[2] === pickDay.dk; }).sort(function (a, b) { var T = function (s) { var p = (s || "0:0").split(":"); return (+p[0]) * 60 + (+p[1]); }; return T(a[3]) - T(b[3]); }).map(function (m) {
         var kbj = etToBJ(m[3]); var kp = dateParts(m[2]);
         var t = en ? m[3] + " ET" : m[3] + " 美东 / " + kbj.time + " 北京" + kp.mo + "月" + (kp.dd + (kbj.nextDay ? 1 : 0)) + "日";
         var badge = m[1] === 4 ? (m[0] === 103 ? (en ? "3rd" : "季军赛") : (en ? "Final" : "决赛")) : (en ? KO_SHORT_EN[m[1]] : KO_SHORT_ZH[m[1]]);
@@ -607,7 +607,7 @@
       }
       renderDashCards(A, en, idxs);
     } else {
-      var kms = (window.__WC_KO.KO || []).filter(function (m) { return m[2] === pickDay.dk && koResolvedFixture(m); });
+      var kms = (window.__WC_KO.KO || []).filter(function (m) { return m[2] === pickDay.dk && koResolvedFixture(m); }).sort(function (a, b) { var T = function (s) { var p = (s || "0:0").split(":"); return (+p[0]) * 60 + (+p[1]); }; return T(a[3]) - T(b[3]); });
       if (kms.length) renderDashKoCards(A, en, kms);
       else cardHost.innerHTML = "<div class='wc-dtoday-empty'>" + (en ? "Knockout pairings are provisional until bracket slots are decided." : "淘汰赛对阵暂定，球队确定后再开放单场卡。") + "</div>";
     }
