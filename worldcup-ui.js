@@ -207,7 +207,7 @@
   }
 
   /* --------------------------------------------------- schedule / groups */
-  var selDay = 0;
+  var selDay = 0, timelineInited = false;
   var WD_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   var WD_ZH = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
   function dayKeys() {
@@ -237,10 +237,24 @@
     if (d.round === 4) return d.no === 103 ? (en ? "3rd" : "季军赛") : (en ? "Final" : "决赛");
     return en ? KO_SHORT_EN[d.round] : KO_SHORT_ZH[d.round];
   }
+  function todayDayIdx() {   // 逐日赛程默认选中日:今日(美东);今日非比赛日→下一比赛日;赛程走完→最后一天。复用 dkNum,与竞猜卡同口径,每天自动跟进、无需手动。
+    var days = allDays(); if (!days.length) return 0;
+    var etd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" }).split("/");   // [M,D,YYYY]
+    var todayNum = (+etd[2] === 2026 ? (+etd[0]) * 100 + (+etd[1]) : 611);
+    var exact = -1, nextI = -1, nextN = 1e9, lastI = 0, lastN = -1;
+    for (var i = 0; i < days.length; i++) {
+      var n = dkNum(days[i].dk);
+      if (n === todayNum) { exact = i; break; }
+      if (n > todayNum && n < nextN) { nextN = n; nextI = i; }
+      if (n > lastN) { lastN = n; lastI = i; }
+    }
+    return exact >= 0 ? exact : (nextI >= 0 ? nextI : lastI);
+  }
   function renderTimeline() {
     var host = el("wc-timeline"); if (!host) return;
     var en = WC.getLang() === "en";
     var days = allDays();
+    if (!timelineInited) { selDay = todayDayIdx(); timelineInited = true; }   // 首次进入:默认今日赛程(而非揭幕日);之后用户点选照旧、不再覆盖
     host.innerHTML = days.map(function (d, i) {
       var P = dateParts(d.dk);
       var wd = new Date(2026, P.mo - 1, P.dd).getDay();
