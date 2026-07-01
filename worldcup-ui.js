@@ -207,7 +207,7 @@
   }
 
   /* --------------------------------------------------- schedule / groups */
-  var selDay = 0, timelineInited = false;
+  var selDay = 0, timelineInited = false, timelineScrollPending = false;
   var WD_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   var WD_ZH = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
   function dayKeys() {
@@ -254,7 +254,7 @@
     var host = el("wc-timeline"); if (!host) return;
     var en = WC.getLang() === "en";
     var days = allDays();
-    if (!timelineInited) { selDay = todayDayIdx(); timelineInited = true; }   // 首次进入:默认今日赛程(而非揭幕日);之后用户点选照旧、不再覆盖
+    if (!timelineInited) { selDay = todayDayIdx(); timelineInited = true; timelineScrollPending = true; }   // 首次进入:默认今日赛程(而非揭幕日)+触发横条居中;之后用户点选照旧、不再覆盖
     host.innerHTML = days.map(function (d, i) {
       var P = dateParts(d.dk);
       var wd = new Date(2026, P.mo - 1, P.dd).getDay();
@@ -267,6 +267,14 @@
         "<span class='wc-day-mon'>" + monWd + "</span>" +
       "</button>";
     }).join("");
+    if (timelineScrollPending) {   // 首次默认今日:把横向日期条滚到选中日【居中】——只滚 wc-timeline 容器、不动整页;首尾日居中不了会自动靠边
+      timelineScrollPending = false;
+      var seld = host.querySelector(".wc-day.sel");
+      if (seld) {
+        var hr = host.getBoundingClientRect(), sr = seld.getBoundingClientRect();
+        host.scrollLeft += (sr.left - hr.left) - (host.clientWidth - seld.offsetWidth) / 2;
+      }
+    }
     host.querySelectorAll(".wc-day").forEach(function (b) {
       b.addEventListener("click", function () { selDay = +b.getAttribute("data-i"); renderTimeline(); renderPhaseDetail(); });
     });
