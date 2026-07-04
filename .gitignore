@@ -9,3 +9,4 @@ test_*.html
 Thumbs.db
 .vscode/
 .idea/
+*.bak_*
