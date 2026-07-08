@@ -482,12 +482,14 @@
       var pa = dateParts(a.dk), pb = dateParts(b.dk);
       return (pa.mo * 100 + pa.dd) - (pb.mo * 100 + pb.dd);
     });
-    var pick = null;
+    var A0 = window.__WC_ARENA, cutoff = todayNum;
+    if (A0 && A0.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A0.REVEAL_THROUGH));
+    var pick = null, pickNum = -1;
     for (var k = 0; k < days.length; k++) {
-      var P = dateParts(days[k].dk);
-      if (P.mo * 100 + P.dd >= todayNum) { pick = days[k]; break; }
+      var P = dateParts(days[k].dk), num = P.mo * 100 + P.dd;
+      if (num <= cutoff && num > pickNum) { pickNum = num; pick = days[k]; }   // 最近一个已揭晓的比赛日:休息日回退到上一比赛日,新预测始终展示
     }
-    if (!pick) pick = days[days.length - 1];
+    if (!pick) pick = days[0];
     if (!pick) return { type: "group", i: 0 };
     if (pick.type === "group") {
       for (var i = 0; i < WC.FIX.length; i++) if (WC.FIX[i][0] === pick.dk) return { type: "group", i: i };
@@ -615,15 +617,16 @@
     // 赛程日期键按【美东时间】编;"今日"也必须按美东算 —— 否则东亚已过午夜时,按浏览器本地(如北京6/12凌晨)会提前跳到次日、把当天还没开球的揭幕战(美东仍6/11)当成昨天藏掉。
     var etd = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York" }).split("/");  // "M/D/YYYY"
     var todayNum = (+etd[2] === 2026 ? (+etd[0]) * 100 + (+etd[1]) : 611);
-    var pickDay = null, isToday = false;
+    var cutoff = todayNum;
+    if (A && A.REVEAL_THROUGH) cutoff = Math.max(cutoff, dkNum(A.REVEAL_THROUGH));
+    var pickDay = null, pickNum = -1;
     for (var k = 0; k < days.length; k++) {
       var P = dateParts(days[k].dk); var num = P.mo * 100 + P.dd;
-      if (num === todayNum) { pickDay = days[k]; isToday = true; break; }
-      if (num > todayNum) { pickDay = days[k]; break; }
+      if (num <= cutoff && num > pickNum) { pickNum = num; pickDay = days[k]; }   // 最近一个已揭晓的比赛日:休息日回退,预测始终公开
     }
-    if (!pickDay) pickDay = days[days.length - 1];
+    if (!pickDay) pickDay = days[0];
     var dp = dateParts(pickDay.dk), wd = new Date(2026, dp.mo - 1, dp.dd).getDay();
-    if (tTtl) tTtl.textContent = (isToday ? (en ? "Today" : "今日赛程") : (en ? "Next match day" : "下一比赛日")) +
+    if (tTtl) tTtl.textContent = (pickNum === todayNum ? (en ? "Today" : "今日赛程") : (pickNum > todayNum ? (en ? "Next match day" : "下一比赛日") : (en ? "Latest match day" : "最近比赛日"))) +
       " · " + dp.mo + (en ? "/" : "月") + dp.dd + (en ? "" : "日") + " " + (en ? WD_EN[wd] : WD_ZH[wd]);
     var rows;
     if (pickDay.type === "group") {
