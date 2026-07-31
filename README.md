@@ -1,52 +1,83 @@
-**English** | [中文](README_zh.md)
+<div align="center">
 
-# World Cup 2026 · Multi-LLM Prediction Arena — Web
+# ⚽ WorldCup Arena — Web
 
-> 🌐 **Live site:** https://llm-worldcup-arena.github.io/
-> 🧩 **Code:** https://github.com/Social-AI-2026/worldcup2026-codebase
-> 📦 **Data:** https://huggingface.co/datasets/Social-AI-2026/worldcup2026
+**The front end for a prospective, leakage-free LLM forecasting benchmark**
+</br>
+<em>前瞻式无泄漏大模型预测基准的前端</em>
 
-The front-end for the **2026 World Cup multi-LLM prediction benchmark**. Six **flagship, state-of-the-art** models (Claude / GPT / Gemini / Kimi / GLM / Seed) fill out a football-lottery pick card for every match. This site shows their picks, the tournament outright pool, and a **live leaderboard** that settles against real results.
+Six frontier models, 104 matches, seven markets each — every pick locked before kickoff.
 
-## What's on the page
+[![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
+[![Site](https://img.shields.io/badge/Live%20Site-llm--worldcup--arena-1baf7a?style=flat-square)](https://llm-worldcup-arena.github.io/)
+[![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/Social-AI-2026/worldcup2026-codebase)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
+[![Build](https://img.shields.io/badge/Build-none%20%C2%B7%20static-e87ba4?style=flat-square)](#-tech)
 
-- **Model leaderboard** — live ranking, updated as real results land;
-- **Pick cards** — per match, all 6 models across **7 markets** (1X2 · handicap · O/U 2.5 · BTTS · odd/even · HT-FT · correct score), with an **Actual result** column;
-- **Outright pool** — champion · finalists · semi-finalists · winning region · total goals;
-- **Group winners** — each model's pick for all 12 groups;
-- **Today's fixtures & full schedule** — revealed day by day as the tournament unfolds.
+[English](./README.md) | [中文文档](./README.zh.md)
 
-Scoring (shown on the page): match markets **+1 ~ +5**, outrights from **+25** (champion) down to **+2** (group winner). All picks lock before kickoff; correct calls accumulate into the leaderboard.
+</div>
 
-## Tech
+## ⚡ What this is
 
-Pure static site — **vanilla HTML / CSS / JavaScript, no build step, zero dependencies**, deployed via **GitHub Pages**. Bilingual (EN / 中文) via `data-en` / `data-zh` attributes.
+The site that showed six frontier LLMs predicting the 2026 World Cup, one match at a time, always
+before kickoff. It renders their pick cards, the tournament outright pool, and a leaderboard that
+settles against real results.
 
-## Files
+## 📄 What's on the page
+
+- **Model leaderboard** — updated as real results land
+- **Pick cards** — per match, all six models across **7 markets** (1X2 · handicap · O/U 2.5 · BTTS ·
+  odd/even · HT-FT · correct score), with an **Actual result** column
+- **Outright pool** — champion · finalists · semi-finalists · winning confederation · total goals
+- **Group winners** — each model's pick for all 12 groups
+- **Fixtures** — revealed day by day as the tournament unfolded
+
+All picks lock before kickoff; every market settles on the **90-minute scoreline**.
+
+## 🛠 Tech
+
+Pure static site — **vanilla HTML / CSS / JavaScript, no build step, zero dependencies**, deployed
+via **GitHub Pages**. Bilingual (EN / 中文) through `data-en` / `data-zh` attributes and a language
+toggle in the top bar.
+
+## 🗂 Files
 
 | File | What |
 |---|---|
-| `index.html` | Page structure (hero · leaderboard · arena · schedule · method) |
-| `worldcup.css` · `styles.css` | Styles — `worldcup.css` is this project; `styles.css` is the shared base |
-| `worldcup-data.js` | **The predictions** — each model's picks (`PRED`) + label/mapping tables. Generated from the benchmark's prediction archive. |
-| `worldcup-arena.js` | Scoring config — markets, points, and real results (`RESULTS` / `CHAMPION` / `GROUP_WINNERS` …) |
+| `index.html` | Page structure — hero · leaderboard · arena · schedule · method |
+| `worldcup.css` · `styles.css` | Styles — `worldcup.css` is this project, `styles.css` the shared base |
+| `worldcup-data.js` | **The predictions** — each model's picks (`PRED`) plus label and mapping tables |
+| `worldcup-arena.js` | Scoring config — markets, points, and real results (`RESULTS` · `CHAMPION` · `GROUP_WINNERS`) |
 | `worldcup-ui.js` | Rendering — leaderboard, pick cards, pools, nav scrollspy |
-| `worldcup-app.js` · `worldcup-knockout.js` | Teams / fixtures / groups / knockout-bracket data |
+| `worldcup-app.js` · `worldcup-knockout.js` | Teams, fixtures, groups, knockout bracket |
 
-## Data flow
+## 🔄 Data flow
 
-Predictions and real results live in the **[codebase repo](https://github.com/Social-AI-2026/worldcup2026-codebase)** (`wc_runs/archive/`). There, `update_web.py` writes them into `worldcup-data.js` (the `PRED` object) and `worldcup-arena.js` (`RESULTS`), then bumps the `?v=` cache-buster in `index.html`.
+The page is generated, not hand-written. In a working checkout of the
+**[pipeline repository](https://github.com/Social-AI-2026/worldcup2026-codebase)**,
+`wc_eval/predict/update_web.py` reads the prediction archive and writes it into
+`worldcup-data.js` (the `PRED` object) and `worldcup-arena.js` (`RESULTS`), then bumps the `?v=`
+cache-buster in `index.html`.
 
-> The page is **data-driven from the archive — don't hand-edit `worldcup-data.js`** (use `update_web.py`).
+> **Do not hand-edit `worldcup-data.js`.** It is derived from the archive; run `update_web.py`
+> instead. Hand edits are silently overwritten and break the guarantee that what the site shows is
+> what the models actually returned.
 
-## Run locally
+The archive itself is not part of the public release: the published dataset is the **briefing
+material and the official results**, not our own predictions. See
+[`Social-AI-2026/worldcup2026`](https://huggingface.co/datasets/Social-AI-2026/worldcup2026).
+
+## 🚀 Run locally
 
 ```bash
-# any static server, e.g.
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
----
+Any static server works. There is nothing to install and nothing to compile.
 
-All predictions are **model-generated, for entertainment only**.
+## ⚖️ License
+
+[MIT](LICENSE). All predictions shown are **model-generated, for entertainment only** — not betting
+advice.
