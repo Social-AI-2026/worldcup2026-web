@@ -3,7 +3,8 @@
 # World Cup 2026 · Multi-LLM Prediction Arena — Web
 
 > 🌐 **Live site:** https://llm-worldcup-arena.github.io/
-> 🧩 **Code & data (benchmark):** https://github.com/llm-worldcup-arena/worldcup-arena-codebase
+> 🧩 **Code:** https://github.com/Social-AI-2026/worldcup2026-codebase
+> 📦 **Data:** https://huggingface.co/datasets/Social-AI-2026/worldcup2026
 
 The front-end for the **2026 World Cup multi-LLM prediction benchmark**. Six **flagship, state-of-the-art** models (Claude / GPT / Gemini / Kimi / GLM / Seed) fill out a football-lottery pick card for every match. This site shows their picks, the tournament outright pool, and a **live leaderboard** that settles against real results.
 
@@ -34,7 +35,7 @@ Pure static site — **vanilla HTML / CSS / JavaScript, no build step, zero depe
 
 ## Data flow
 
-Predictions and real results live in the **[codebase repo](https://github.com/llm-worldcup-arena/worldcup-arena-codebase)** (`wc_runs/archive/`). There, `update_web.py` writes them into `worldcup-data.js` (the `PRED` object) and `worldcup-arena.js` (`RESULTS`), then bumps the `?v=` cache-buster in `index.html`.
+Predictions and real results live in the **[codebase repo](https://github.com/Social-AI-2026/worldcup2026-codebase)** (`wc_runs/archive/`). There, `update_web.py` writes them into `worldcup-data.js` (the `PRED` object) and `worldcup-arena.js` (`RESULTS`), then bumps the `?v=` cache-buster in `index.html`.
 
 > The page is **data-driven from the archive — don't hand-edit `worldcup-data.js`** (use `update_web.py`).
 
