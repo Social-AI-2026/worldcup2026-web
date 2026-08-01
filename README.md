@@ -2,9 +2,9 @@
 
 # ⚽ WorldCup Arena — Web
 
+前瞻式无泄漏大模型预测基准的前端
+</br>
 The front end for a prospective, leakage-free LLM forecasting benchmark
-
-Six frontier models, 104 matches, seven markets each — every pick locked before kickoff.
 
 [![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
 [![Site](https://img.shields.io/badge/Live%20Site-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
