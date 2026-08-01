@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./static/image/worldcup_arena_logo.png" alt="WorldCup Arena Logo" width="75%"/>
+# ⚽ WorldCup Arena — Web
 
 前瞻式无泄漏大模型预测基准的前端
 </br>
