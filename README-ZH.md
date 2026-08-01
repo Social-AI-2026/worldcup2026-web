@@ -1,20 +1,22 @@
 <div align="center">
 
-# ⚽ WorldCup Arena — 网页端
+# ⚽ WorldCup Arena — Web
 
-**前瞻式无泄漏大模型预测基准的前端**
+前瞻式无泄漏大模型预测基准的前端
 </br>
 <em>The front end for a prospective, leakage-free LLM forecasting benchmark</em>
 
 六个前沿模型、104 场比赛、每场七个盘口——每一票都在开球前锁定。
+</br>
+<em>Six frontier models, 104 matches, seven markets each — every pick locked before kickoff.</em>
 
 [![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
-[![Site](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E7%BD%91%E9%A1%B5-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
+[![Site](https://img.shields.io/badge/Live%20Site-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
 [![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/Social-AI-2026/worldcup2026-codebase)
-[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20%E6%95%B0%E6%8D%AE%E9%9B%86-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
-[![Build](https://img.shields.io/badge/%E6%9E%84%E5%BB%BA-%E6%97%A0%20%C2%B7%20%E7%BA%AF%E9%9D%99%E6%80%81-e87ba4?style=flat-square)](#-技术)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
+[![Build](https://img.shields.io/badge/Build-none%20%C2%B7%20static-e87ba4?style=flat-square)](#-tech)
 
-[English](./README.md) | [中文文档](./README.zh.md)
+[English](./README.md) | [中文文档](./README-ZH.md)
 
 </div>
 

@@ -2,11 +2,13 @@
 
 # ⚽ WorldCup Arena — Web
 
-**The front end for a prospective, leakage-free LLM forecasting benchmark**
+前瞻式无泄漏大模型预测基准的前端
 </br>
-<em>前瞻式无泄漏大模型预测基准的前端</em>
+<em>The front end for a prospective, leakage-free LLM forecasting benchmark</em>
 
-Six frontier models, 104 matches, seven markets each — every pick locked before kickoff.
+六个前沿模型、104 场比赛、每场七个盘口——每一票都在开球前锁定。
+</br>
+<em>Six frontier models, 104 matches, seven markets each — every pick locked before kickoff.</em>
 
 [![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
 [![Site](https://img.shields.io/badge/Live%20Site-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
@@ -14,7 +16,7 @@ Six frontier models, 104 matches, seven markets each — every pick locked befor
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
 [![Build](https://img.shields.io/badge/Build-none%20%C2%B7%20static-e87ba4?style=flat-square)](#-tech)
 
-[English](./README.md) | [中文文档](./README.zh.md)
+[English](./README.md) | [中文文档](./README-ZH.md)
 
 </div>
 
