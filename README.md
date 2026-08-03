@@ -7,8 +7,8 @@
 The front end for a prospective, leakage-free LLM forecasting benchmark
 
 [![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
-[![Site](https://img.shields.io/badge/Live%20Site-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
-[![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/Social-AI-2026/worldcup2026-codebase)
+[![Site](https://img.shields.io/badge/Live%20Site-co--minder.github.io-1baf7a?style=flat-square)](https://co-minder.github.io/worldcup2026/)
+[![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/co-minder/worldcup2026-codebase)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
 [![Build](https://img.shields.io/badge/Build-none%20%C2%B7%20static-e87ba4?style=flat-square)](#-tech)
 
@@ -53,7 +53,7 @@ toggle in the top bar.
 ## 🔄 Data flow
 
 The page is generated, not hand-written. In a working checkout of the
-**[pipeline repository](https://github.com/Social-AI-2026/worldcup2026-codebase)**,
+**[pipeline repository](https://github.com/co-minder/worldcup2026-codebase)**,
 `wc_eval/predict/update_web.py` reads the prediction archive and writes it into
 `worldcup-data.js` (the `PRED` object) and `worldcup-arena.js` (`RESULTS`), then bumps the `?v=`
 cache-buster in `index.html`.

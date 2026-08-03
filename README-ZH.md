@@ -7,8 +7,8 @@
 The front end for a prospective, leakage-free LLM forecasting benchmark
 
 [![License](https://img.shields.io/badge/License-MIT-2a78d6?style=flat-square)](LICENSE)
-[![Site](https://img.shields.io/badge/Live%20Site-social--ai--2026.github.io-1baf7a?style=flat-square)](https://social-ai-2026.github.io/worldcup2026-web/)
-[![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/Social-AI-2026/worldcup2026-codebase)
+[![Site](https://img.shields.io/badge/Live%20Site-co--minder.github.io-1baf7a?style=flat-square)](https://co-minder.github.io/worldcup2026/)
+[![Code](https://img.shields.io/badge/GitHub-worldcup2026--codebase-eb6834?style=flat-square&logo=github&logoColor=white)](https://github.com/co-minder/worldcup2026-codebase)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-WorldCup%20Arena-eda100?style=flat-square)](https://huggingface.co/datasets/Social-AI-2026/worldcup2026)
 [![Build](https://img.shields.io/badge/Build-none%20%C2%B7%20static-e87ba4?style=flat-square)](#-tech)
 
@@ -47,7 +47,7 @@ The front end for a prospective, leakage-free LLM forecasting benchmark
 
 ## 🔄 数据流
 
-页面是生成出来的，不是手写的。在**[流水线仓库](https://github.com/Social-AI-2026/worldcup2026-codebase)**的工作副本里，`wc_eval/predict/update_web.py` 读取预测归档，写进 `worldcup-data.js`（`PRED` 对象）和 `worldcup-arena.js`（`RESULTS`），然后 bump `index.html` 的 `?v=` 缓存戳。
+页面是生成出来的，不是手写的。在**[流水线仓库](https://github.com/co-minder/worldcup2026-codebase)**的工作副本里，`wc_eval/predict/update_web.py` 读取预测归档，写进 `worldcup-data.js`（`PRED` 对象）和 `worldcup-arena.js`（`RESULTS`），然后 bump `index.html` 的 `?v=` 缓存戳。
 
 > **不要手工改 `worldcup-data.js`。**它是从归档派生出来的，要改请跑 `update_web.py`。手工改动会被静默覆盖，并且会破坏"页面展示的就是模型真实返回的内容"这个保证。
 
